@@ -60,9 +60,12 @@ jobs:
 
       - name: Install Buildozer and Dependencies
         run: |
-          pip install --upgrade pip
+          sudo apt-get install -y libssl-dev libffi-dev build-essential
+          pip install --upgrade pip setuptools wheel
           pip install buildozer cython
           pip install kivy
+          python3 -m pip install --force-reinstall buildozer
+          buildozer --version
 
       - name: Cache Buildozer Global Directory
         uses: actions/cache@v4
