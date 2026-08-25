@@ -28,7 +28,7 @@ jobs:
 
       - name: Accept Android SDK Licenses
         run: |
-          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses < <(yes)
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
 
       - name: Install Complete Android Build Tools
         run: |
@@ -38,6 +38,20 @@ jobs:
             "cmdline-tools;latest" \
             "platform-tools" \
             "ndk;25.1.8937393"
+
+      - name: Verify Android SDK Installation
+        run: |
+          echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
+          echo "ANDROID_HOME: $ANDROID_HOME"
+          echo "=== Build Tools Available ==="
+          ls -la "$ANDROID_SDK_ROOT/build-tools/" || echo "build-tools directory not found"
+          echo "=== Checking for AIDL ==="
+          if [ -f "$ANDROID_SDK_ROOT/build-tools/34.0.0/aidl" ]; then
+            echo "✓ AIDL found at $ANDROID_SDK_ROOT/build-tools/34.0.0/aidl"
+          else
+            echo "✗ AIDL not found, reinstalling build-tools..."
+            $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0"
+          fi
 
       - name: Install Python and Pip
         run: |
@@ -56,21 +70,15 @@ jobs:
           path: ~/.buildozer
           key: ${{ runner.os }}-buildozer-${{ hashFiles('**/buildozer.spec') }}-v3
 
-      - name: Verify Android Build Tools
-        run: |
-          echo "Android SDK Root: $ANDROID_SDK_ROOT"
-          ls -la "$ANDROID_SDK_ROOT/build-tools/" || echo "build-tools directory not found"
-          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "build-tools;34.0.0"
-
       - name: Build with Buildozer
-        uses: digreatbrian/buildozer-action@v2
         env:
           ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
           ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
           ANDROID_NDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}/ndk/25.1.8937393
-          PATH: ${{ env.ANDROID_SDK_ROOT }}/build-tools/34.0.0:${{ env.PATH }}
-        with:
-          buildozer-cmd: buildozer android debug
+          PATH: ${{ env.ANDROID_SDK_ROOT }}/build-tools/34.0.0:${{ env.ANDROID_SDK_ROOT }}/platform-tools:${{ env.PATH }}
+          JAVA_HOME: ${{ env.JAVA_HOME }}
+        run: |
+          buildozer android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
