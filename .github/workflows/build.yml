@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # Uses the fastest available modern runner
+    runs-on: ubuntu-22.04 # Uses the fastest available modern runner
 
     steps:
       - name: Checkout Code
