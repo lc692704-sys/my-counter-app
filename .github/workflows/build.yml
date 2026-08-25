@@ -2,21 +2,21 @@ name: Build Kivy APK
 
 on:
   push:
-    branches: [ "main" ] # Triggers the build whenever you push to the main branch
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Uses the fastest available modern runner
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Upgraded to v4
 
       # Cache Buildozer global directory to make future builds faster
       - name: Cache Buildozer Global Directory
-        uses: actions/cache@v3
+        uses: actions/cache@v4 # Upgraded to v4
         with:
           path: ~/.buildozer
           key: ${{ runner.os }}-buildozer-${{ hashFiles('**/buildozer.spec') }}
@@ -31,7 +31,7 @@ jobs:
 
       # Upload the compiled APK so you can download it
       - name: Upload APK Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # Upgraded to v4 to fix the error!
         with:
           name: package
           path: bin/*.apk
