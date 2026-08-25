@@ -27,6 +27,10 @@ jobs:
           build-tools-version: "34.0.0"
           sdk-version: "34"
 
+      - name: Accept Android SDK Licenses
+        run: |
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses < <(yes)
+
       # Cache Buildozer global directory to make future builds faster
       - name: Cache Buildozer Global Directory
         uses: actions/cache@v4
