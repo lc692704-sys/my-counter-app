@@ -56,12 +56,19 @@ jobs:
           path: ~/.buildozer
           key: ${{ runner.os }}-buildozer-${{ hashFiles('**/buildozer.spec') }}-v3
 
+      - name: Verify Android Build Tools
+        run: |
+          echo "Android SDK Root: $ANDROID_SDK_ROOT"
+          ls -la "$ANDROID_SDK_ROOT/build-tools/" || echo "build-tools directory not found"
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "build-tools;34.0.0"
+
       - name: Build with Buildozer
         uses: digreatbrian/buildozer-action@v2
         env:
           ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
           ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
           ANDROID_NDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}/ndk/25.1.8937393
+          PATH: ${{ env.ANDROID_SDK_ROOT }}/build-tools/34.0.0:${{ env.PATH }}
         with:
           buildozer-cmd: buildozer android debug
 
