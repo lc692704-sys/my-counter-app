@@ -31,6 +31,10 @@ jobs:
         run: |
           $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses < <(yes)
 
+      - name: Install Android Build Tools
+        run: |
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0" "platforms;android-34"
+
       # Cache Buildozer global directory to make future builds faster
       - name: Cache Buildozer Global Directory
         uses: actions/cache@v4
